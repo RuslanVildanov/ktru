@@ -81,6 +81,9 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="ZakupkiUtils">
+      <HintPath>..\..\..\..\..\..\..\Users\Russell\source\repos\RuslanVildanov\zakupki-utils\ZakupkiUtils\bin\Release\ZakupkiUtils.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">

@@ -13,7 +13,7 @@ namespace Ktru.ftp
 
         public string GetKtruDir()
         {
-            return FtpZakupkiService.KTRU_FTP_URL;
+            return ZakupkiUtils.FtpZakupkiService.KTRU_FTP_URL;
         }
 
         public string GetLocalKtruDir()
