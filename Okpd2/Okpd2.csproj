@@ -63,11 +63,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ftp\FtpZakupkiService.cs" />
     <Compile Include="ftp\FtpZakupkiSettings.cs" />
-    <Compile Include="infrastructure\IZakupkiFileService.cs" />
     <Compile Include="infrastructure\IZakupkiSettings.cs" />
-    <Compile Include="infrastructure\ZakupkiFile.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

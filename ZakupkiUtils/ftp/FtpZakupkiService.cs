@@ -1,18 +1,16 @@
-﻿using Ktru.infrastructure;
-using Ktru.model;
+﻿using ZakupkiUtils.infrastructure;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 
-namespace Ktru.ftp
+namespace ZakupkiUtils.ftp
 {
-    class FtpZakupkiService : IZakupkiFileService
+    public class FtpZakupkiService : IZakupkiFileService
     {
         public IEnumerable<ZakupkiFile> GetFiles(string zakupki_dir)
         {
             var result = new List<ZakupkiFile>();
-            var output = ZakupkiUtils.FtpZakupkiService.GetFiles(zakupki_dir);
+            var output = FtpZakupkiServiceStatic.GetFiles(zakupki_dir);
             foreach(var item in output)
             {
                 result.Add(new ZakupkiFile(item.ParentDir, item.Name, item.Modified, item.Size, item.IsFile));
@@ -26,18 +24,13 @@ namespace Ktru.ftp
             Action<long> progress,
             Action<string> error)
         {
-            ZakupkiUtils.ZakupkiFile f = new ZakupkiUtils.ZakupkiFile(
+            ZakupkiFile f = new ZakupkiFile(
                 file.ParentDir,
                 file.Name,
                 file.Modified,
                 file.Size,
                 file.IsFile);
-            await ZakupkiUtils.FtpZakupkiService.DownloadFile(f, targetLocalFile, progress, error);
-        }
-
-        public static async Task CopyStream(Stream from, Stream to, Action<long> progress)
-        {
-            await ZakupkiUtils.FtpZakupkiService.CopyStream(from, to, progress);
+            await FtpZakupkiServiceStatic.DownloadFile(f, targetLocalFile, progress, error);
         }
 
     }

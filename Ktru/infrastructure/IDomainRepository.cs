@@ -1,5 +1,5 @@
-﻿using Ktru.model;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using ZakupkiUtils.infrastructure;
 
 namespace Ktru.infrastructure
 {

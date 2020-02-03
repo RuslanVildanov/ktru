@@ -41,9 +41,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FtpZakupkiService.cs" />
+    <Compile Include="ftp\FtpZakupkiService.cs" />
+    <Compile Include="ftp\FtpZakupkiServiceStatic.cs" />
+    <Compile Include="infrastructure\IZakupkiFileService.cs" />
+    <Compile Include="infrastructure\ZakupkiFile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ZakupkiFile.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

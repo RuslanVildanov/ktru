@@ -104,10 +104,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ftp\FtpZakupkiService.cs" />
     <Compile Include="ftp\FtpZakupkiSettings.cs" />
     <Compile Include="infrastructure\IDomainRepository.cs" />
-    <Compile Include="infrastructure\IZakupkiFileService.cs" />
     <Compile Include="infrastructure\IZakupkiSettings.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -116,7 +114,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="model\DomainModel.cs" />
-    <Compile Include="model\ZakupkiFile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

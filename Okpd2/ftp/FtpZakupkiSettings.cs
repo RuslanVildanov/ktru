@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using ZakupkiUtils.ftp;
 
 namespace Okpd2.ftp
 {
@@ -13,7 +14,7 @@ namespace Okpd2.ftp
 
         public string GetOkpd2Dir()
         {
-            return ZakupkiUtils.FtpZakupkiService.KTRU_FTP_URL;
+            return FtpZakupkiServiceStatic.KTRU_FTP_URL;
         }
 
         public string GetLocalOkpd2Dir()

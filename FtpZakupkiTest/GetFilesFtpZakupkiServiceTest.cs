@@ -1,7 +1,8 @@
 ﻿using System.Linq;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ZakupkiUtils;
+using ZakupkiUtils.infrastructure;
+using ZakupkiUtils.ftp;
 
 namespace FtpZakupkiTest
 {
@@ -11,7 +12,7 @@ namespace FtpZakupkiTest
         [TestMethod]
         public void SuccessTest()
         {
-            IEnumerable<ZakupkiFile> result = FtpZakupkiService.GetFiles(FtpZakupkiService.KTRU_FTP_URL);
+            IEnumerable<ZakupkiFile> result = FtpZakupkiServiceStatic.GetFiles(FtpZakupkiServiceStatic.KTRU_FTP_URL);
             Assert.IsTrue(result.Any());
         }
     }

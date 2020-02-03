@@ -9,6 +9,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml;
+using ZakupkiUtils.infrastructure;
 
 namespace Ktru.operation
 {

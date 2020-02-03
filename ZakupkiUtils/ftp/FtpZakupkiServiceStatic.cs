@@ -5,10 +5,11 @@ using System.IO;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using ZakupkiUtils.infrastructure;
 
-namespace ZakupkiUtils
+namespace ZakupkiUtils.ftp
 {
-    public class FtpZakupkiService
+    public class FtpZakupkiServiceStatic
     {
         public const string OKPD_FTP_URL = "ftp://ftp.zakupki.gov.ru/fcs_nsi/nsiOKPD";
         public const string OKPD2_FTP_URL = "ftp://ftp.zakupki.gov.ru/fcs_nsi/nsiOKPD2";

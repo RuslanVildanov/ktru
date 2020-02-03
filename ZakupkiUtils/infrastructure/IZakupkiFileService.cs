@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Okpd2.infrastructure
+namespace ZakupkiUtils.infrastructure
 {
-    interface IZakupkiFileService
+    public interface IZakupkiFileService
     {
         IEnumerable<ZakupkiFile> GetFiles(string zakupki_dir);
         Task DownloadFile(

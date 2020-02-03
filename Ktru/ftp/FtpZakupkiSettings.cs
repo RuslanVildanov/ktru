@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using ZakupkiUtils.ftp;
 
 namespace Ktru.ftp
 {
@@ -13,7 +14,7 @@ namespace Ktru.ftp
 
         public string GetKtruDir()
         {
-            return ZakupkiUtils.FtpZakupkiService.KTRU_FTP_URL;
+            return FtpZakupkiServiceStatic.KTRU_FTP_URL;
         }
 
         public string GetLocalKtruDir()

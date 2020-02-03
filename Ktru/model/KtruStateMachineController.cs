@@ -96,29 +96,30 @@ namespace Ktru.model
         private void ProcessInputText(string value)
         {
             bool ok;
+            var v = value.Trim();
             switch(ktruField)
             {
                 case KtruField.Code:
-                    newKtru.Code = value;
+                    newKtru.Code = v;
                     break;
                 case KtruField.Name:
-                    newKtru.Name = value;
+                    newKtru.Name = v;
                     break;
                 case KtruField.Unit:
-                    newKtru.Units.Add(value);
+                    newKtru.Units.Add(v);
                     break;
                 case KtruField.StartDate:
-                    ok = DateTime.TryParse(value, out DateTime dt);
+                    ok = DateTime.TryParse(v, out DateTime dt);
                     Trace.Assert(ok);
                     newKtru.StartDate = dt;
                     break;
                 case KtruField.Version:
-                    ok = int.TryParse(value, out int ver);
+                    ok = int.TryParse(v, out int ver);
                     Trace.Assert(ok);
                     newKtru.Version = ver;
                     break;
                 case KtruField.Actual:
-                    ok = Boolean.TryParse(value, out bool result);
+                    ok = Boolean.TryParse(v, out bool result);
                     Trace.Assert(ok);
                     newKtru.Actual = result;
                     break;

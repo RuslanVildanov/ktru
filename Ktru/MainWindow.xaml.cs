@@ -8,6 +8,7 @@ using Ktru.xlsx;
 using System;
 using System.Diagnostics;
 using System.Windows;
+using ZakupkiUtils.ftp;
 
 namespace Ktru
 {

@@ -1,6 +1,6 @@
-﻿using Ktru.model;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
+using ZakupkiUtils.infrastructure;
 
 namespace Ktru.infrastructure
 {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using Ktru.infrastructure;
-using Ktru.model;
+using ZakupkiUtils.infrastructure;
 
 namespace Ktru.repository
 {

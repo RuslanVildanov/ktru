@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace ZakupkiUtils
+namespace ZakupkiUtils.infrastructure
 {
     public class ZakupkiFile
     {
