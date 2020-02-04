@@ -5,9 +5,8 @@ using System.IO;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using ZakupkiUtils.infrastructure;
 
-namespace ZakupkiUtils.ftp
+namespace ZakupkiUtils.infrastructure
 {
     public class FtpZakupkiServiceStatic
     {

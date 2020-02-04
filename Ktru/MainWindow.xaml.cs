@@ -1,5 +1,4 @@
-﻿using Ktru.ftp;
-using Ktru.infrastructure;
+﻿using Ktru.infrastructure;
 using Ktru.model;
 using Ktru.operation;
 using Ktru.repository;
@@ -8,7 +7,7 @@ using Ktru.xlsx;
 using System;
 using System.Diagnostics;
 using System.Windows;
-using ZakupkiUtils.ftp;
+using ZakupkiUtils.infrastructure;
 
 namespace Ktru
 {
@@ -17,12 +16,13 @@ namespace Ktru
     /// </summary>
     public partial class MainWindow : Window
     {
-        private static IZakupkiSettings settings = new FtpZakupkiSettings();
+        private static IZakupkiFactory factory = new ZakupkiFactory();
+        private static IZakupkiSettings settings = factory.CreateSettings();
         private static IDomainModel domainModel = new DomainModel(new DomainRepository(settings));
 //        private static IXlsxOperation xlsx = new ExcelLibraryOperation();
         private static IXlsxOperation xlsx = new EPPlusOperation();
         private OperationLayer operationLayer = new OperationLayer(
-            new FtpZakupkiService(),
+            factory.CreteFileService(),
             settings,
             xlsx,
             domainModel);

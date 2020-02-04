@@ -123,7 +123,7 @@ namespace Ktru.operation
             bool onlyActual,
             bool needClear)
         {
-            string archDir = settings.PrepareLocalArchiveDir(out string error);
+            string archDir = settings.PrepareLocalKtruArchiveDir(out string error);
             if (error != string.Empty)
             {
                 result(error);
@@ -157,7 +157,7 @@ namespace Ktru.operation
                 return;
             }
             if (needClear)
-                settings.ClearLocalArchiveDir(out error);
+                settings.ClearLocalKtruArchiveDir(out error);
             result(error);
         }
 

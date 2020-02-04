@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ZakupkiUtils.ftp
 {
-    public class FtpZakupkiService : IZakupkiFileService
+    class FtpZakupkiService : IZakupkiFileService
     {
         public IEnumerable<ZakupkiFile> GetFiles(string zakupki_dir)
         {
