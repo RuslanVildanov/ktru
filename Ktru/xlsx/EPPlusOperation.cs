@@ -13,14 +13,17 @@ namespace Ktru.xlsx
         {
             using (ExcelPackage excelPackage = new ExcelPackage())
             {
+                var currentDate = DateTime.Today;
+                var ktruName = "КТРУ от " + currentDate.ToShortDateString();
+
                 //Set some properties of the Excel document
                 excelPackage.Workbook.Properties.Author = "Ktru.exe";
-                excelPackage.Workbook.Properties.Title = "КТРУ";
+                excelPackage.Workbook.Properties.Title = ktruName;
                 excelPackage.Workbook.Properties.Subject = "Каталог товаров, работ, услуг для обеспечения государственных и муниципальных нужд";
                 excelPackage.Workbook.Properties.Created = DateTime.Now;
 
                 //Create the WorkSheet
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.Add("КТРУ");
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.Add(ktruName);
 
                 //Add some text to cell A1
                 worksheet.Cells["A1"].Value = "Код";
