@@ -1,9 +1,9 @@
 ﻿<Application x:Class="Okpd2.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:Okpd2"
+             xmlns:vm="clr-namespace:Okpd2.vm"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <vm:MainWindowVM x:Key="mainViewModel" />
     </Application.Resources>
 </Application>
