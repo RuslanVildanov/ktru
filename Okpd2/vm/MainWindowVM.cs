@@ -1,10 +1,9 @@
 ﻿using Okpd2.command;
-using Okpd2.infrastructure;
 using Okpd2.model;
 using Okpd2.operation;
 using System;
 using System.ComponentModel;
-using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace Okpd2.vm
 {
@@ -12,39 +11,17 @@ namespace Okpd2.vm
     {
         public MainWindowVM()
         {
+            model.PropertyChanged += OnModelPropertyChanged;
             operationLayer = new Okpd2OperationLayer(model);
         }
 
-        public DelegateCommand CheckOkpd2Command => new DelegateCommand(CheckOkpd2, CanExecuteCommands);
+        public DelegateCommand CheckOkpd2Command => new DelegateCommand(model.CheckOkpd2, CanExecuteCommands);
+        public DelegateCommand LoadOkpd2Command => new DelegateCommand(model.LoadOkpd2, CanExecuteCommands);
         public DelegateCommand WindowClosing => new DelegateCommand(OnClose);
-
-        private async void CheckOkpd2(object o)
-        {
-            using (var fw = new FalseWhile(SetCanExecuteCommands))
-            {
-                await Task.Run(() => CheckOkpd2Long() );
-            }
-        }
-
-        internal void CheckOkpd2Long()
-        {
-            for (var i = 0; i < 1000000; i++)
-            {
-                if (isClose)
-                {
-                    break;
-                }
-                Console.WriteLine(i);
-
-                // the following line will block main thread unless
-                //  ExecuteLongProcedure is called in an async method
-                System.Threading.Thread.Sleep(1);
-            }
-        }
 
         private void OnClose(object o)
         {
-            isClose = true;
+            model.Close();
         }
 
         private readonly Okpd2Model model = new Okpd2Model();
@@ -52,13 +29,16 @@ namespace Okpd2.vm
 
         private bool CanExecuteCommands(object o)
         {
-            return canExecuteCommands;
+            return model.IsAvailable;
         }
 
-        private bool canExecuteCommands = true;
-        private void SetCanExecuteCommands(bool v)
+        private void OnModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            canExecuteCommands = v;
+            if (e.PropertyName == nameof(model.Progress))
+            {
+                Trace.Assert(sender == model);
+                Console.WriteLine(model.Progress);
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -67,6 +47,5 @@ namespace Okpd2.vm
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private bool isClose = false;
     }
 }

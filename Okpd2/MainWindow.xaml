@@ -26,7 +26,7 @@
         <Menu Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" VerticalAlignment="Top" Name="mainMenu">
             <MenuItem Header="Файл">
                 <MenuItem Name="checkOkpd2MainMenu" Header="Проверить обновление ОКПД2 на сервере" Command="{Binding CheckOkpd2Command}"></MenuItem>
-                <MenuItem Name="updateOkpd2MainMenu" Header="Загрузить обновление ОКПД2" ></MenuItem>
+                <MenuItem Name="updateOkpd2MainMenu" Header="Загрузить обновление ОКПД2" Command="{Binding LoadOkpd2Command}"></MenuItem>
                 <Separator />
                 <MenuItem Header="Выход" Click="Exit_Click"></MenuItem>
             </MenuItem>
