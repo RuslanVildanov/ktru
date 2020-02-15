@@ -101,14 +101,14 @@ namespace ZakupkiUtils.ftp
 
         public string GetOkpd2Dir()
         {
-            return FtpZakupkiServiceStatic.KTRU_FTP_URL;
+            return FtpZakupkiServiceStatic.OKPD2_FTP_URL;
         }
 
         public string GetLocalOkpd2Dir()
         {
             FileInfo fi = new FileInfo(Assembly.GetExecutingAssembly().Location);
             Trace.Assert(fi.Exists);
-            return fi.Directory.FullName + "\\ktru";
+            return fi.Directory.FullName + "\\okpd2";
         }
 
         public string CreateLocalOkpd2DirIfNeed(out string error)
@@ -136,7 +136,7 @@ namespace ZakupkiUtils.ftp
             error = string.Empty;
             FileInfo fi = new FileInfo(Assembly.GetExecutingAssembly().Location);
             Trace.Assert(fi.Exists);
-            string result = fi.Directory.FullName + "\\archive";
+            string result = fi.Directory.FullName + "\\okpd2_archive";
             try
             {
                 if (Directory.Exists(result))
@@ -159,7 +159,7 @@ namespace ZakupkiUtils.ftp
             error = string.Empty;
             FileInfo fi = new FileInfo(Assembly.GetExecutingAssembly().Location);
             Trace.Assert(fi.Exists);
-            string result = fi.Directory.FullName + "\\archive";
+            string result = fi.Directory.FullName + "\\okpd2_archive";
             try
             {
                 if (Directory.Exists(result))

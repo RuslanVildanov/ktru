@@ -93,7 +93,6 @@
     <Compile Include="model\KtruStateMachineController.cs" />
     <Compile Include="operation\OperationLayer.cs" />
     <Compile Include="vm\DomainVM.cs" />
-    <Compile Include="repository\DomainRepository.cs" />
     <Compile Include="xlsx\EPPlusOperation.cs" />
     <Compile Include="xlsx\ExcelLibraryOperation.cs" />
     <Page Include="MainWindow.xaml">
@@ -104,7 +103,6 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="infrastructure\IDomainRepository.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

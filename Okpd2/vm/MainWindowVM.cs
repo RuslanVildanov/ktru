@@ -4,6 +4,7 @@ using Okpd2.operation;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using ZakupkiUtils.infrastructure;
 
 namespace Okpd2.vm
 {
@@ -12,7 +13,6 @@ namespace Okpd2.vm
         public MainWindowVM()
         {
             model.PropertyChanged += OnModelPropertyChanged;
-            operationLayer = new Okpd2OperationLayer(model);
         }
 
         public DelegateCommand CheckOkpd2Command => new DelegateCommand(model.CheckOkpd2, CanExecuteCommands);
@@ -24,8 +24,8 @@ namespace Okpd2.vm
             model.Close();
         }
 
-        private readonly Okpd2Model model = new Okpd2Model();
-        private readonly Okpd2OperationLayer operationLayer;
+        private static readonly IZakupkiFactory factory = new ZakupkiFactory();
+        private readonly Okpd2Model model = new Okpd2Model(factory);
 
         private bool CanExecuteCommands(object o)
         {

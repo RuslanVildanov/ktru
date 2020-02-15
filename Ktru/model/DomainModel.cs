@@ -7,9 +7,9 @@ namespace Ktru.model
 {
     class DomainModel : IDomainModel
     {
-        public DomainModel(IDomainRepository domainRepository)
+        public DomainModel(IZakupkiLocalFileService localFileService)
         {
-            repository = domainRepository;
+            _localFileService = localFileService;
         }
 
         public bool IsKtruModified
@@ -24,17 +24,22 @@ namespace Ktru.model
 
         public IEnumerable<ZakupkiFile> GetLocalFiles(string localDir)
         {
-            return repository.GetLocalFiles(localDir);
+            return _localFileService.GetLocalFiles(localDir);
         }
 
         public ZakupkiFile GetLocalFile(string localFile, out bool ok)
         {
-            return repository.GetLocalFile(localFile, out ok);
+            return _localFileService.GetLocalFile(localFile, out ok);
+        }
+
+        public bool EqualsWithoutParent(IEnumerable<ZakupkiFile> f1, IEnumerable<ZakupkiFile> f2)
+        {
+            return _localFileService.EqualsWithoutParent(f1, f2);
         }
 
         private bool isKtruModified = false;
 
-        private readonly IDomainRepository repository;
+        private readonly IZakupkiLocalFileService _localFileService;
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged(string propertyName = "")

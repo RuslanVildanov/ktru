@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using Ktru.infrastructure;
 using ZakupkiUtils.infrastructure;
 
-namespace Ktru.repository
+namespace ZakupkiUtils.ftp
 {
-    class DomainRepository : IDomainRepository
+    class ZakupkiLocalFileService : IZakupkiLocalFileService
     {
-        public DomainRepository(IZakupkiSettings zakupkiSettings)
+        public ZakupkiLocalFileService(IZakupkiSettings zakupkiSettings)
         {
             settings = zakupkiSettings;
         }
@@ -46,6 +45,33 @@ namespace Ktru.repository
             var fi = new FileInfo(localFile);
             ok = true;
             return new ZakupkiFile(fi.DirectoryName, fi.Name, fi.LastWriteTime, fi.Length, true);
+        }
+
+        public bool EqualsWithoutParent(IEnumerable<ZakupkiFile> f1, IEnumerable<ZakupkiFile> f2)
+        {
+            bool equals = true;
+            foreach (ZakupkiFile zakupkiFile in f1)
+            {
+                bool foundEquals = false;
+                foreach (ZakupkiFile localFile in f2)
+                {
+                    if (!zakupkiFile.IsFile)
+                    {
+                        continue;
+                    }
+                    if (zakupkiFile.EqualsWithoutParent(localFile))
+                    {
+                        foundEquals = true;
+                        break;
+                    }
+                }
+                if (!foundEquals)
+                {
+                    equals = false;
+                    break;
+                }
+            }
+            return equals;
         }
 
         private readonly IZakupkiSettings settings;

@@ -1,7 +1,6 @@
 ﻿using Ktru.infrastructure;
 using Ktru.model;
 using Ktru.operation;
-using Ktru.repository;
 using Ktru.vm;
 using Ktru.xlsx;
 using System;
@@ -18,7 +17,7 @@ namespace Ktru
     {
         private static IZakupkiFactory factory = new ZakupkiFactory();
         private static IZakupkiSettings settings = factory.CreateSettings();
-        private static IDomainModel domainModel = new DomainModel(new DomainRepository(settings));
+        private static IDomainModel domainModel = new DomainModel(factory.CreateLocalFileService(settings));
 //        private static IXlsxOperation xlsx = new ExcelLibraryOperation();
         private static IXlsxOperation xlsx = new EPPlusOperation();
         private OperationLayer operationLayer = new OperationLayer(

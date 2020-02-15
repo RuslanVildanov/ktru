@@ -24,7 +24,7 @@ namespace ZakupkiUtils.infrastructure
             return ParentDir + separator + Name;
         }
 
-        public bool Equals(ZakupkiFile f)
+        public bool EqualsWithoutParent(ZakupkiFile f)
         {
             Trace.Assert(f != null);
             return Name == f.Name

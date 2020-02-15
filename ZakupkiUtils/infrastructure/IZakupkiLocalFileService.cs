@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
-using ZakupkiUtils.infrastructure;
 
-namespace Ktru.infrastructure
+namespace ZakupkiUtils.infrastructure
 {
-    interface IDomainRepository
+    public interface IZakupkiLocalFileService
     {
         IEnumerable<ZakupkiFile> GetLocalFiles(string localDir);
         ZakupkiFile GetLocalFile(string localFile, out bool ok);
+        bool EqualsWithoutParent(IEnumerable<ZakupkiFile> f1, IEnumerable<ZakupkiFile> f2);
     }
 }

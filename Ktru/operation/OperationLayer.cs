@@ -39,27 +39,7 @@ namespace Ktru.operation
             domainModel.IsKtruModified = false;
             IEnumerable<ZakupkiFile> zakupkiFiles = fileService.GetFiles(settings.GetKtruDir());
             IEnumerable<ZakupkiFile> localFiles = domainModel.GetLocalFiles(settings.GetLocalKtruDir());
-            foreach (ZakupkiFile zakupkiFile in zakupkiFiles)
-            {
-                bool foundEquals = false;
-                foreach (ZakupkiFile localFile in localFiles)
-                {
-                    if (!zakupkiFile.IsFile)
-                    {
-                        continue;
-                    }
-                    if (zakupkiFile.Equals(localFile))
-                    {
-                        foundEquals = true;
-                        break;
-                    }
-                }
-                if (!foundEquals)
-                {
-                    domainModel.IsKtruModified = true;
-                    break;
-                }
-            }
+            domainModel.IsKtruModified = !domainModel.EqualsWithoutParent(zakupkiFiles, localFiles);
         }
 
         public async Task UpdateKtru(Action<ProgressZakupkiFile> progress, Action<string> result)
@@ -101,7 +81,7 @@ namespace Ktru.operation
                     found = false;
                     foreach(var zakupkiFile in zakupkiFiles)
                     {
-                        if (localFile.Equals(zakupkiFile))
+                        if (localFile.EqualsWithoutParent(zakupkiFile))
                         {
                             found = true;
                             break;
@@ -169,7 +149,7 @@ namespace Ktru.operation
         {
             string localFile = targetDir + '\\' + file.Name;
             var f = domainModel.GetLocalFile(localFile, out bool ok);
-            if (ok && file.Equals(f))
+            if (ok && file.EqualsWithoutParent(f))
             {
                 return;
             }

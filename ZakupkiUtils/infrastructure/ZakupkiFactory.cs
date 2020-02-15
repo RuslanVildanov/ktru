@@ -13,5 +13,10 @@ namespace ZakupkiUtils.infrastructure
         {
             return new FtpZakupkiService();
         }
+
+        public IZakupkiLocalFileService CreateLocalFileService(IZakupkiSettings settings)
+        {
+            return new ZakupkiLocalFileService(settings);
+        }
     }
 }

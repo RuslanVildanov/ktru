@@ -42,10 +42,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ftp\FtpZakupkiService.cs" />
+    <Compile Include="ftp\ZakupkiLocalFileService.cs" />
     <Compile Include="infrastructure\FtpZakupkiServiceStatic.cs" />
     <Compile Include="ftp\FtpZakupkiSettings.cs" />
     <Compile Include="infrastructure\IZakupkiFactory.cs" />
     <Compile Include="infrastructure\IZakupkiFileService.cs" />
+    <Compile Include="infrastructure\IZakupkiLocalFileService.cs" />
     <Compile Include="infrastructure\IZakupkiSettings.cs" />
     <Compile Include="infrastructure\ZakupkiFactory.cs" />
     <Compile Include="infrastructure\ZakupkiFile.cs" />

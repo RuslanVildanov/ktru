@@ -1,16 +1,34 @@
 ﻿using Okpd2.infrastructure;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
-using System.Windows.Input;
+using ZakupkiUtils.infrastructure;
 
 namespace Okpd2.model
 {
     class Okpd2Model : INotifyPropertyChanged
     {
+        public Okpd2Model(IZakupkiFactory factory)
+        {
+            _settings = factory.CreateSettings();
+            _fileService = factory.CreteFileService();
+            _localFileService = factory.CreateLocalFileService(_settings);
+        }
+
         public void Close()
         {
             _isClose = true;
+        }
+
+        public bool HasOkpd2Changes
+        {
+            get => _hasOkpd2Changes;
+            private set
+            {
+                _hasOkpd2Changes = value;
+                OnPropertyChanged(nameof(HasOkpd2Changes));
+            }
         }
 
         public bool IsAvailable
@@ -35,11 +53,14 @@ namespace Okpd2.model
 
         public async void CheckOkpd2(object o)
         {
+            bool result = false;
             using (var fw = new FalseWhile(SetIsAvailable))
             {
-                Progress = "Начало работы";
-                await Task.Run(() => CheckOkpd2Long());
-                Progress = "Работа закончена";
+                Progress = "Начата проверка ОКПД2";
+                HasOkpd2Changes = false;
+                await Task.Run(() => CheckOkpd2Long(r => { result = r; }));
+                HasOkpd2Changes = result;
+                Progress = "Проверка закончена";
             }
         }
 
@@ -53,25 +74,13 @@ namespace Okpd2.model
             }
         }
 
-        internal void CheckOkpd2Long()
+        internal void CheckOkpd2Long(Action<bool> result)
         {
-            for (var i = 0; i < 10000; i++)
-            {
-                if (_isClose)
-                {
-                    break;
-                }
-                Console.WriteLine(i);
-
-                if (i == 5000)
-                {
-                    Progress = "середина работы";
-                }
-
-                // the following line will block main thread unless
-                //  ExecuteLongProcedure is called in an async method
-                System.Threading.Thread.Sleep(1);
-            }
+            string localDir = _settings.GetLocalOkpd2Dir();
+            IEnumerable<ZakupkiFile> localFiles = _localFileService.GetLocalFiles(localDir);
+            IEnumerable<ZakupkiFile> files = _fileService.GetFiles(_settings.GetOkpd2Dir());
+            bool isEquals = _localFileService.EqualsWithoutParent(localFiles, files);
+            result(isEquals);
         }
 
         internal void LoadOkpd2Long()
@@ -90,8 +99,12 @@ namespace Okpd2.model
             IsAvailable = isAvailable;
         }
         private bool _isAvailable = true;
+        private bool _hasOkpd2Changes = false;
         private string _progress = string.Empty;
         private bool _isClose = false;
+        private IZakupkiFileService _fileService;
+        private IZakupkiSettings _settings;
+        private IZakupkiLocalFileService _localFileService;
 
     }
 }
