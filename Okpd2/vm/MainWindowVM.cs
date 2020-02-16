@@ -19,6 +19,26 @@ namespace Okpd2.vm
         public DelegateCommand LoadOkpd2Command => new DelegateCommand(model.LoadOkpd2, CanExecuteCommands);
         public DelegateCommand WindowClosing => new DelegateCommand(OnClose);
 
+        public string CurrentInfo
+        {
+            get => _currentInfo;
+            private set
+            {
+                _currentInfo = value;
+                OnPropertyChanged(nameof(CurrentInfo));
+            }
+        }
+
+        public string CurrentInfoBackground
+        {
+            get => _currentInfoBackground;
+            private set
+            {
+                _currentInfoBackground = value;
+                OnPropertyChanged(nameof(CurrentInfoBackground));
+            }
+        }
+
         private void OnClose(object o)
         {
             model.Close();
@@ -37,9 +57,27 @@ namespace Okpd2.vm
             if (e.PropertyName == nameof(model.Progress))
             {
                 Trace.Assert(sender == model);
-                Console.WriteLine(model.Progress);
+                CurrentInfoBackground = "White";
+                CurrentInfo = model.Progress;
+            }
+            else if (e.PropertyName == nameof(model.HasOkpd2Changes))
+            {
+                Trace.Assert(sender == model);
+                if (model.HasOkpd2Changes)
+                {
+                    CurrentInfoBackground = "LemonChiffon";
+                    CurrentInfo = "ВНИМАНИЕ! Есть новые данные на сервере.";
+                }
+                else
+                {
+                    CurrentInfoBackground = "White";
+                    CurrentInfo = "Все локальные данные актуальны.";
+                }
             }
         }
+
+        private string _currentInfo = string.Empty;
+        private string _currentInfoBackground = "White";
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged(string propertyName = "")

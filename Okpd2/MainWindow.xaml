@@ -31,6 +31,7 @@
                 <MenuItem Header="Выход" Click="Exit_Click"></MenuItem>
             </MenuItem>
         </Menu>
+        <TextBlock Margin="5 2 5 2" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" Name="CurrentInfo" Text="{Binding CurrentInfo}" Background="{Binding CurrentInfoBackground}" />
         <i:Interaction.Triggers>
             <i:EventTrigger EventName="Closing">
                 <i:InvokeCommandAction Command="{Binding WindowClosing}" />

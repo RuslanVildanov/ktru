@@ -21,10 +21,10 @@ namespace ZakupkiUtils.ftp
             {
                 files = Directory.GetFiles(localDir);
             }
-            catch(Exception e)
+            catch(Exception)
             {
-                Console.WriteLine(e.Message);
-                Console.WriteLine(e.StackTrace);
+                // контролируемое исключение, на верхнем уровне не интересны
+                // причины поему вернётся пустой список локальных файлов
             }
             foreach (var filePath in files)
             {

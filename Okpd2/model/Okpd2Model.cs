@@ -56,11 +56,11 @@ namespace Okpd2.model
             bool result = false;
             using (var fw = new FalseWhile(SetIsAvailable))
             {
-                Progress = "Начата проверка ОКПД2";
                 HasOkpd2Changes = false;
+                Progress = "Начата проверка ОКПД2";
                 await Task.Run(() => CheckOkpd2Long(r => { result = r; }));
-                HasOkpd2Changes = result;
                 Progress = "Проверка закончена";
+                HasOkpd2Changes = result;
             }
         }
 
