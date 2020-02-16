@@ -89,7 +89,14 @@ namespace Ktru.operation
                     }
                     if (!found)
                     {
-                        File.Delete(localFile.FullPath());
+                        try
+                        {
+                            File.Delete(localFile.FullPath());
+                        }
+                        catch(Exception e)
+                        {
+                            error = e.Message;
+                        }
                     }
                 }
             }

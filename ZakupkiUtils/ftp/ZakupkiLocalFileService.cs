@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using ZakupkiUtils.infrastructure;
 
 namespace ZakupkiUtils.ftp
@@ -10,7 +11,7 @@ namespace ZakupkiUtils.ftp
     {
         public ZakupkiLocalFileService(IZakupkiSettings zakupkiSettings)
         {
-            settings = zakupkiSettings;
+            _settings = zakupkiSettings;
         }
 
         public IEnumerable<ZakupkiFile> GetLocalFiles(string localDir)
@@ -49,7 +50,10 @@ namespace ZakupkiUtils.ftp
 
         public bool EqualsWithoutParent(IEnumerable<ZakupkiFile> f1, IEnumerable<ZakupkiFile> f2)
         {
-            bool equals = true;
+            if (f1.Count() != f2.Count())
+            {
+                return false;
+            }
             foreach (ZakupkiFile zakupkiFile in f1)
             {
                 bool foundEquals = false;
@@ -67,13 +71,12 @@ namespace ZakupkiUtils.ftp
                 }
                 if (!foundEquals)
                 {
-                    equals = false;
-                    break;
+                    return false;
                 }
             }
-            return equals;
+            return true;
         }
 
-        private readonly IZakupkiSettings settings;
+        private readonly IZakupkiSettings _settings;
     }
 }

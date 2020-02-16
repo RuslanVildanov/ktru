@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Threading.Tasks;
 using ZakupkiUtils.infrastructure;
 
@@ -53,14 +54,9 @@ namespace Okpd2.model
 
         public async void CheckOkpd2(object o)
         {
-            bool result = false;
             using (var fw = new FalseWhile(SetIsAvailable))
             {
-                HasOkpd2Changes = false;
-                Progress = "Начата проверка ОКПД2";
-                await Task.Run(() => CheckOkpd2Long(r => { result = r; }));
-                Progress = "Проверка закончена";
-                HasOkpd2Changes = result;
+                await Task.Run(() => CheckOkpd2Long());
             }
         }
 
@@ -68,30 +64,103 @@ namespace Okpd2.model
         {
             using (var fw = new FalseWhile(SetIsAvailable))
             {
-                Progress = "Начало работы";
-                await Task.Run(() => LoadOkpd2Long());
-                Progress = "Работа закончена";
+                Progress = "Начата загрузка файлов ОКПД2";
+                await LoadOkpd2Long();
+                Progress = "Загрузка файлов ОКПД2 закончена";
             }
         }
 
-        internal void CheckOkpd2Long(Action<bool> result)
+        internal void CheckOkpd2Long()
         {
+            HasOkpd2Changes = false;
+            Progress = "Начата проверка ОКПД2";
+            System.Threading.Thread.Sleep(500); // для того, чтобы на экране отобразился прогресс
+
             string localDir = _settings.GetLocalOkpd2Dir();
             IEnumerable<ZakupkiFile> localFiles = _localFileService.GetLocalFiles(localDir);
             IEnumerable<ZakupkiFile> files = _fileService.GetFiles(_settings.GetOkpd2Dir());
             bool isEquals = _localFileService.EqualsWithoutParent(localFiles, files);
-            result(isEquals);
+            Progress = "Проверка закончена";
+            System.Threading.Thread.Sleep(1000);
+
+            HasOkpd2Changes = !isEquals;
         }
 
-        internal void LoadOkpd2Long()
+        internal async Task LoadOkpd2Long()
         {
-            Progress = "середина работы";
+            string localOkpd2Dir = _settings.CreateLocalOkpd2DirIfNeed(out string error);
+            if (error != string.Empty)
+            {
+                Progress =  error;
+                return;
+            }
+            IEnumerable<ZakupkiFile> zakupkiFiles = _fileService.GetFiles(_settings.GetOkpd2Dir());
+            bool hasError = false;
+            foreach (var zakupkiFile in zakupkiFiles)
+            {
+                await DownloadFile(localOkpd2Dir, zakupkiFile, err => {
+                    if(err != string.Empty)
+                    {
+                        Progress = err;
+                        hasError = true;
+                    }
+                });
+                if (hasError || _isClose)
+                {
+                    break;
+                }
+            }
+            if (!hasError && !_isClose)
+            {
+                bool found;
+                IEnumerable<ZakupkiFile> localFiles = _localFileService.GetLocalFiles(localOkpd2Dir);
+                foreach (var localFile in localFiles)
+                {
+                    found = false;
+                    foreach (var zakupkiFile in zakupkiFiles)
+                    {
+                        if (localFile.EqualsWithoutParent(zakupkiFile))
+                        {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found)
+                    {
+                        try
+                        {
+                            File.Delete(localFile.FullPath());
+                        }
+                        catch(Exception e)
+                        {
+                            Progress = e.Message;
+                        }
+                    }
+                }
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged(string propertyName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private async Task DownloadFile(
+            string targetDir,
+            ZakupkiFile file,
+            Action<string> error)
+        {
+            string localFile = targetDir + '\\' + file.Name;
+            var f = _localFileService.GetLocalFile(localFile, out bool ok);
+            if (ok && file.EqualsWithoutParent(f))
+            {
+                return;
+            }
+            await _fileService.DownloadFile(file, localFile,
+                progress => {
+                    Progress = "Удалённая загрузка файла " + file.Name + " загружено " + progress + "/" + file.Size;
+                }, error);
         }
 
         private void SetIsAvailable(bool isAvailable)
