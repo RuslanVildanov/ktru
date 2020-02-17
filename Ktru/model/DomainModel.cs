@@ -32,6 +32,11 @@ namespace Ktru.model
             return _localFileService.GetLocalFile(localFile, out ok);
         }
 
+        public void RemoveNotFoundLocalFiles(string localDir, IEnumerable<ZakupkiFile> notFoundIn, out string error)
+        {
+            _localFileService.RemoveNotFoundLocalFiles(localDir, notFoundIn, out error);
+        }
+
         public bool EqualsWithoutParent(IEnumerable<ZakupkiFile> f1, IEnumerable<ZakupkiFile> f2)
         {
             return _localFileService.EqualsWithoutParent(f1, f2);

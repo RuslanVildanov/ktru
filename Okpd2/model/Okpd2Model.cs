@@ -65,8 +65,12 @@ namespace Okpd2.model
             using (var fw = new FalseWhile(SetIsAvailable))
             {
                 Progress = "Начата загрузка файлов ОКПД2";
-                await LoadOkpd2Long();
-                Progress = "Загрузка файлов ОКПД2 закончена";
+                bool hasError = false;
+                await LoadOkpd2Long(err => { hasError = err; });
+                if (!hasError)
+                {
+                    Progress = "Загрузка файлов ОКПД2 закончена";
+                }
             }
         }
 
@@ -74,7 +78,7 @@ namespace Okpd2.model
         {
             HasOkpd2Changes = false;
             Progress = "Начата проверка ОКПД2";
-            System.Threading.Thread.Sleep(500); // для того, чтобы на экране отобразился прогресс
+            System.Threading.Thread.Sleep(500); //это для того, чтобы на экране отобразился прогресс
 
             string localDir = _settings.GetLocalOkpd2Dir();
             IEnumerable<ZakupkiFile> localFiles = _localFileService.GetLocalFiles(localDir);
@@ -86,7 +90,7 @@ namespace Okpd2.model
             HasOkpd2Changes = !isEquals;
         }
 
-        internal async Task LoadOkpd2Long()
+        internal async Task LoadOkpd2Long(Action<bool> hasErrorAction)
         {
             string localOkpd2Dir = _settings.CreateLocalOkpd2DirIfNeed(out string error);
             if (error != string.Empty)
@@ -112,32 +116,14 @@ namespace Okpd2.model
             }
             if (!hasError && !_isClose)
             {
-                bool found;
-                IEnumerable<ZakupkiFile> localFiles = _localFileService.GetLocalFiles(localOkpd2Dir);
-                foreach (var localFile in localFiles)
+                _localFileService.RemoveNotFoundLocalFiles(localOkpd2Dir, zakupkiFiles, out error);
+                if (error != string.Empty)
                 {
-                    found = false;
-                    foreach (var zakupkiFile in zakupkiFiles)
-                    {
-                        if (localFile.EqualsWithoutParent(zakupkiFile))
-                        {
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (!found)
-                    {
-                        try
-                        {
-                            File.Delete(localFile.FullPath());
-                        }
-                        catch(Exception e)
-                        {
-                            Progress = e.Message;
-                        }
-                    }
+                    Progress = error;
                 }
+                await ExtractLocalOkpd2Files(localOkpd2Dir, err => { hasError = err; });
             }
+            hasErrorAction(hasError);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -161,6 +147,27 @@ namespace Okpd2.model
                 progress => {
                     Progress = "Удалённая загрузка файла " + file.Name + " загружено " + progress + "/" + file.Size;
                 }, error);
+        }
+
+        private async Task ExtractLocalOkpd2Files(string localOkpd2Dir, Action<bool> hasErrorAction)
+        {
+            string archiveDir = _settings.PrepareLocalOkpd2ArchiveDir(out string error);
+            if (error != string.Empty)
+            {
+                Progress = error;
+                hasErrorAction(true);
+                return;
+            }
+            await _localFileService.ExtractLocalZipFiles(_settings.GetLocalOkpd2Dir(), archiveDir,
+                progress =>
+                {
+                    Progress = "Распаковка файла " + progress;
+                },
+                err =>
+                {
+                    Progress = err;
+                    hasErrorAction(true);
+                });
         }
 
         private void SetIsAvailable(bool isAvailable)

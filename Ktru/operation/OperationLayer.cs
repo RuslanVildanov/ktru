@@ -28,29 +28,29 @@ namespace Ktru.operation
             IXlsxOperation xlsxOperation,
             IDomainModel model)
         {
-            fileService = zakupkiFileService;
-            settings = zakupkiSettings;
-            xlsx = xlsxOperation;
-            domainModel = model;
+            _fileService = zakupkiFileService;
+            _settings = zakupkiSettings;
+            _xlsx = xlsxOperation;
+            _domainModel = model;
         }
 
         public void CheckKtruRelevance()
         {
-            domainModel.IsKtruModified = false;
-            IEnumerable<ZakupkiFile> zakupkiFiles = fileService.GetFiles(settings.GetKtruDir());
-            IEnumerable<ZakupkiFile> localFiles = domainModel.GetLocalFiles(settings.GetLocalKtruDir());
-            domainModel.IsKtruModified = !domainModel.EqualsWithoutParent(zakupkiFiles, localFiles);
+            _domainModel.IsKtruModified = false;
+            IEnumerable<ZakupkiFile> zakupkiFiles = _fileService.GetFiles(_settings.GetKtruDir());
+            IEnumerable<ZakupkiFile> localFiles = _domainModel.GetLocalFiles(_settings.GetLocalKtruDir());
+            _domainModel.IsKtruModified = !_domainModel.EqualsWithoutParent(zakupkiFiles, localFiles);
         }
 
         public async Task UpdateKtru(Action<ProgressZakupkiFile> progress, Action<string> result)
         {
-            string localKtruDir = settings.CreateLocalKtruDirIfNeed(out string error);
+            string localKtruDir = _settings.CreateLocalKtruDirIfNeed(out string error);
             if (error != string.Empty)
             {
                 result(error);
                 return;
             }
-            IEnumerable<ZakupkiFile> zakupkiFiles = fileService.GetFiles(settings.GetKtruDir());
+            IEnumerable<ZakupkiFile> zakupkiFiles = _fileService.GetFiles(_settings.GetKtruDir());
             foreach (var zakupkiFile in zakupkiFiles)
             {
                 await DownloadFile(localKtruDir, zakupkiFile, x =>
@@ -74,31 +74,7 @@ namespace Ktru.operation
             }
             if (error == string.Empty)
             {
-                bool found;
-                IEnumerable<ZakupkiFile> localFiles = domainModel.GetLocalFiles(localKtruDir);
-                foreach(var localFile in localFiles)
-                {
-                    found = false;
-                    foreach(var zakupkiFile in zakupkiFiles)
-                    {
-                        if (localFile.EqualsWithoutParent(zakupkiFile))
-                        {
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (!found)
-                    {
-                        try
-                        {
-                            File.Delete(localFile.FullPath());
-                        }
-                        catch(Exception e)
-                        {
-                            error = e.Message;
-                        }
-                    }
-                }
+                _domainModel.RemoveNotFoundLocalFiles(localKtruDir, zakupkiFiles, out error);
             }
             result(error);
         }
@@ -110,7 +86,7 @@ namespace Ktru.operation
             bool onlyActual,
             bool needClear)
         {
-            string archDir = settings.PrepareLocalKtruArchiveDir(out string error);
+            string archDir = _settings.PrepareLocalKtruArchiveDir(out string error);
             if (error != string.Empty)
             {
                 result(error);
@@ -144,7 +120,7 @@ namespace Ktru.operation
                 return;
             }
             if (needClear)
-                settings.ClearLocalKtruArchiveDir(out error);
+                _settings.ClearLocalKtruArchiveDir(out error);
             result(error);
         }
 
@@ -155,12 +131,12 @@ namespace Ktru.operation
             Action<string> error)
         {
             string localFile = targetDir + '\\' + file.Name;
-            var f = domainModel.GetLocalFile(localFile, out bool ok);
+            var f = _domainModel.GetLocalFile(localFile, out bool ok);
             if (ok && file.EqualsWithoutParent(f))
             {
                 return;
             }
-            await fileService.DownloadFile(file, localFile, progress, error);
+            await _fileService.DownloadFile(file, localFile, progress, error);
         }
 
         private async Task ExtractLocalKtruFiles(
@@ -170,7 +146,7 @@ namespace Ktru.operation
         {
             try
             {
-                IEnumerable<ZakupkiFile> localFiles = domainModel.GetLocalFiles(settings.GetLocalKtruDir());
+                IEnumerable<ZakupkiFile> localFiles = _domainModel.GetLocalFiles(_settings.GetLocalKtruDir());
                 foreach (ZakupkiFile localFile in localFiles)
                 {
                     await Task.Run(() => ZipFile.ExtractToDirectory(localFile.FullPath(), archDir));
@@ -205,7 +181,7 @@ namespace Ktru.operation
                 IEnumerable<string> localXmlFiles = Directory.EnumerateFiles(archDir, "*.xml");
                 foreach (string localXml in localXmlFiles)
                 {
-                    var f = domainModel.GetLocalFile(localXml, out bool ok);
+                    var f = _domainModel.GetLocalFile(localXml, out bool ok);
                     Trace.Assert(ok);
                     progress(new ProgressZakupkiFile
                     {
@@ -228,7 +204,7 @@ namespace Ktru.operation
                     });
                 }
                 var sortedKtrus = ktrus.ToList().OrderBy(x => x.Code).ThenBy(y => y.Version);
-                xlsx.SaveKtruFile(resultFile, sortedKtrus);
+                _xlsx.SaveKtruFile(resultFile, sortedKtrus);
             }
             catch (Exception e)
             {
@@ -280,10 +256,10 @@ namespace Ktru.operation
             }
         }
 
-        private readonly IZakupkiFileService fileService;
-        private readonly IZakupkiSettings settings;
-        private readonly IXlsxOperation xlsx;
-        private readonly IDomainModel domainModel;
+        private readonly IZakupkiFileService _fileService;
+        private readonly IZakupkiSettings _settings;
+        private readonly IXlsxOperation _xlsx;
+        private readonly IDomainModel _domainModel;
 
     }
 }

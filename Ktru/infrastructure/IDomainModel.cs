@@ -9,6 +9,7 @@ namespace Ktru.infrastructure
         bool IsKtruModified { get; set; }
         IEnumerable<ZakupkiFile> GetLocalFiles(string localDir);
         ZakupkiFile GetLocalFile(string localFile, out bool ok);
+        void RemoveNotFoundLocalFiles(string localDir, IEnumerable<ZakupkiFile> notFoundIn, out string error);
         bool EqualsWithoutParent(IEnumerable<ZakupkiFile> f1, IEnumerable<ZakupkiFile> f2);
     }
 }
