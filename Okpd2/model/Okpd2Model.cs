@@ -1,9 +1,12 @@
 ﻿using Okpd2.infrastructure;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
+using System.Xml;
 using ZakupkiUtils.infrastructure;
 
 namespace Okpd2.model
@@ -121,7 +124,18 @@ namespace Okpd2.model
                 {
                     Progress = error;
                 }
-                await ExtractLocalOkpd2Files(localOkpd2Dir, err => { hasError = err; });
+                string archiveDir = _settings.PrepareLocalOkpd2ArchiveDir(out error);
+                if (error != string.Empty)
+                {
+                    Progress = error;
+                    hasErrorAction(true);
+                    return;
+                }
+                await ExtractLocalOkpd2Files(localOkpd2Dir, archiveDir, err => { hasError = err; });
+                if (!hasError)
+                {
+                    await LoadOkpd2FromLocalFiles(archiveDir);
+                }
             }
             hasErrorAction(hasError);
         }
@@ -149,16 +163,9 @@ namespace Okpd2.model
                 }, error);
         }
 
-        private async Task ExtractLocalOkpd2Files(string localOkpd2Dir, Action<bool> hasErrorAction)
+        private async Task ExtractLocalOkpd2Files(string localOkpd2Dir, string targetDir, Action<bool> hasErrorAction)
         {
-            string archiveDir = _settings.PrepareLocalOkpd2ArchiveDir(out string error);
-            if (error != string.Empty)
-            {
-                Progress = error;
-                hasErrorAction(true);
-                return;
-            }
-            await _localFileService.ExtractLocalZipFiles(_settings.GetLocalOkpd2Dir(), archiveDir,
+            await _localFileService.ExtractLocalZipFiles(_settings.GetLocalOkpd2Dir(), targetDir,
                 progress =>
                 {
                     Progress = "Распаковка файла " + progress;
@@ -168,6 +175,40 @@ namespace Okpd2.model
                     Progress = err;
                     hasErrorAction(true);
                 });
+        }
+
+        private async Task LoadOkpd2FromLocalFiles(string localDir)
+        {
+            var result = new ConcurrentDictionary<int, Okpd2>();
+            IEnumerable<string> localXmlFiles = Directory.EnumerateFiles(localDir, "*.xml");
+            foreach (string localXml in localXmlFiles)
+            {
+                await Task.Run(() =>
+                {
+                    using (XmlTextReader reader = new XmlTextReader(localXml))
+                    {
+                        var sm = new Okpd2StateMachineController(reader);
+                        sm.Run();
+                        foreach (var k in sm.GetOkpd2List())
+                        {
+                            if (!result.ContainsKey(k.Id))
+                            {
+                                bool ok = result.TryAdd(k.Id, k);
+                                Trace.Assert(ok);
+                            }
+                            else
+                            {
+                                bool ok = result.TryGetValue(k.Id, out Okpd2 okpd2);
+                                if (!k.Equals(okpd2))
+                                {
+                                    Console.WriteLine(k + " " + okpd2);
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            Console.WriteLine(result.Count);
         }
 
         private void SetIsAvailable(bool isAvailable)

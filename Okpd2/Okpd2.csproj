@@ -59,7 +59,9 @@
     </ApplicationDefinition>
     <Compile Include="command\DelegateCommand.cs" />
     <Compile Include="infrastructure\FalseWhile.cs" />
+    <Compile Include="model\Okpd2.cs" />
     <Compile Include="model\Okpd2Model.cs" />
+    <Compile Include="model\Okpd2StateMachineController.cs" />
     <Compile Include="operation\Okpd2OperationLayer.cs" />
     <Compile Include="vm\MainWindowVM.cs" />
     <Page Include="MainWindow.xaml">
