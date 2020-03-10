@@ -1,10 +1,12 @@
 ﻿using Okpd2.infrastructure;
+using Okpd2.repository;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Xml;
 using ZakupkiUtils.infrastructure;
@@ -18,6 +20,7 @@ namespace Okpd2.model
             _settings = factory.CreateSettings();
             _fileService = factory.CreteFileService();
             _localFileService = factory.CreateLocalFileService(_settings);
+            _repository = new Okpd2Repository();
         }
 
         public void Close()
@@ -179,6 +182,7 @@ namespace Okpd2.model
 
         private async Task LoadOkpd2FromLocalFiles(string localDir)
         {
+            bool ok;
             var result = new ConcurrentDictionary<int, Okpd2>();
             IEnumerable<string> localXmlFiles = Directory.EnumerateFiles(localDir, "*.xml");
             foreach (string localXml in localXmlFiles)
@@ -193,12 +197,12 @@ namespace Okpd2.model
                         {
                             if (!result.ContainsKey(k.Id))
                             {
-                                bool ok = result.TryAdd(k.Id, k);
+                                ok = result.TryAdd(k.Id, k);
                                 Trace.Assert(ok);
                             }
                             else
                             {
-                                bool ok = result.TryGetValue(k.Id, out Okpd2 okpd2);
+                                ok = result.TryGetValue(k.Id, out Okpd2 okpd2);
                                 if (!k.Equals(okpd2))
                                 {
                                     Console.WriteLine(k + " " + okpd2);
@@ -208,7 +212,19 @@ namespace Okpd2.model
                     }
                 });
             }
-            Console.WriteLine(result.Count);
+            List<int> sortedIds = result.Keys.ToList();
+            sortedIds.Sort();
+            foreach(int id in sortedIds)
+            {
+                ok = result.TryGetValue(id, out Okpd2 okpd2);
+                Trace.Assert(ok);
+                if(okpd2.ParentId == 0)
+                {
+                    Console.WriteLine(okpd2);
+                }
+
+            }
+
         }
 
         private void SetIsAvailable(bool isAvailable)
@@ -222,6 +238,7 @@ namespace Okpd2.model
         private IZakupkiFileService _fileService;
         private IZakupkiSettings _settings;
         private IZakupkiLocalFileService _localFileService;
+        private Okpd2Repository _repository;
 
     }
 }
